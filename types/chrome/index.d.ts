@@ -5,7 +5,6 @@
 //                 sreimer15 <https://github.com/sreimer15>
 //                 MatCarlson <https://github.com/MatCarlson>
 //                 ekinsol <https://github.com/ekinsol>
-//                 Thierry Régagnon <https://github.com/tregagnon>
 //                 Brian Wilson <https://github.com/echoabstract>
 //                 Sebastiaan Pasma <https://github.com/spasma>
 //                 bdbai <https://github.com/bdbai>
@@ -7650,6 +7649,29 @@ declare namespace chrome.scripting {
      * Invoked upon completion of the injection.
      */
     export function insertCSS(injection: CSSInjection, callback?: () => void): void;
+
+    /**
+     * Removes a CSS stylesheet that was previously inserted by this extension from a target context.
+     * @param injection
+     * The details of the styles to remove.
+     * Note that the css, files, and origin properties must exactly match the stylesheet inserted through `insertCSS`.
+     * Attempting to remove a non-existent stylesheet is a no-op.
+     * @return This only returns a Promise when the callback parameter is not specified, and with MV3+.
+     * @since Chrome 90
+     */
+    export function removeCSS(injection: CSSInjection): Promise<void>;
+
+    /**
+     * Removes a CSS stylesheet that was previously inserted by this extension from a target context.
+     * @param injection
+     * The details of the styles to remove.
+     * Note that the css, files, and origin properties must exactly match the stylesheet inserted through `insertCSS`.
+     * Attempting to remove a non-existent stylesheet is a no-op.
+     * @param callback
+     * Invoked upon completion of the removal.
+     * @since Chrome 90
+     */
+    export function removeCSS(injection: CSSInjection, callback?: () => void): void;
 }
 
 ////////////////////
@@ -7855,6 +7877,20 @@ declare namespace chrome.storage {
          */
         get(keys: string | string[] | { [key: string]: any } | null, callback: (items: { [key: string]: any }) => void): void;
         /**
+         * Sets the desired access level for the storage area. The default will be only trusted contexts.
+         * @param accessOptions An object containing an accessLevel key which contains the access level of the storage area.
+         * @return A void Promise.
+         * @since Chrome 102
+         */
+        setAccessLevel(accessOptions: { accessLevel: AccessLevel }): Promise<void>;
+        /**
+         * Sets the desired access level for the storage area. The default will be only trusted contexts.
+         * @param accessOptions An object containing an accessLevel key which contains the access level of the storage area.
+         * @param callback Optional.
+         * @since Chrome 102
+         */
+        setAccessLevel(accessOptions: { accessLevel: AccessLevel }, callback: () => void): void;
+        /**
          * Fired when one or more items change within this storage area.
          * @param keys A single key to get, list of keys to get, or a dictionary specifying default values.
          * An empty list or object will return an empty result object. Pass in null to get the entire contents of storage.
@@ -7909,6 +7945,14 @@ declare namespace chrome.storage {
     type AreaName = keyof Pick<typeof chrome.storage, 'sync' | 'local' | 'managed' | 'session'>;
     export interface StorageChangedEvent
         extends chrome.events.Event<(changes: { [key: string]: StorageChange }, areaName: AreaName) => void> { }
+
+    type AccessLevel = keyof typeof AccessLevel;
+
+    /** The storage area's access level. */
+    export var AccessLevel: {
+        TRUSTED_AND_UNTRUSTED_CONTEXTS: 'TRUSTED_AND_UNTRUSTED_CONTEXTS',
+        TRUSTED_CONTEXTS: 'TRUSTED_CONTEXTS'
+    };
 
     /** Items in the local storage area are local to each machine. */
     export var local: LocalStorageArea;

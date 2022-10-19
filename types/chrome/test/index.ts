@@ -755,6 +755,9 @@ function testStorage() {
     chrome.storage.sync.clear();
     chrome.storage.sync.clear(doneCallback);
 
+    chrome.storage.sync.setAccessLevel({ accessLevel: chrome.storage.AccessLevel.TRUSTED_AND_UNTRUSTED_CONTEXTS });
+    chrome.storage.sync.setAccessLevel({ accessLevel: chrome.storage.AccessLevel.TRUSTED_AND_UNTRUSTED_CONTEXTS }, doneCallback);
+
     chrome.storage.sync.onChanged.addListener(function (changes) {
         var myNewValue: { x: number } = changes['myKey'].newValue;
         var myOldValue: { x: number } = changes['myKey'].oldValue;
@@ -1061,6 +1064,8 @@ async function testScriptingForPromise() {
     await chrome.scripting.executeScript({ target: { tabId: 0 }, files: ['script.js'] }); // $ExpectType InjectionResult<unknown>[]
 
     await chrome.scripting.insertCSS({ target: { tabId: 0 } });
+
+    await chrome.scripting.removeCSS({ target: { tabId: 0 } });
 }
 
 // https://developer.chrome.com/docs/extensions/reference/system_cpu
@@ -1208,6 +1213,8 @@ function testStorageForPromise() {
     chrome.storage.sync.get('testKey').then(() => {});
     chrome.storage.sync.get(['testKey']).then(() => {});
     chrome.storage.sync.get({ testKey: 'testDefaultValue' }).then(() => {});
+
+    chrome.storage.sync.setAccessLevel({ accessLevel: chrome.storage.AccessLevel.TRUSTED_AND_UNTRUSTED_CONTEXTS }).then(() => {});
 }
 
 function testRuntimeSendMessage() {
